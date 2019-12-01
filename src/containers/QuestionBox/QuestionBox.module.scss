@@ -1,0 +1,41 @@
+@import '../../styles/common.scss';
+
+div.question-box--wrapper {
+  max-width: 450px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+div.question-box--text {
+  padding: 20px 0;
+  font-family: $font-family;
+  font-size: 24px;
+  text-align: left;
+  font-weight: $font-weight-bolder;
+  color: $logo-color;
+}
+
+div.question-box--answer-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+div.question-box--buttons-wrapper {
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  button {
+    border: 1px solid $logo-color;
+    background: $logo-color;
+    color: $answer-color;
+    padding: 8px 20px;
+    font-weight: $font-weight-bolder;
+    font-size: 14px;
+    transition: 0.3s all ease-in-out;
+    &:hover, &:active, &:focus {
+      background: $answer-color;
+      color: $logo-color;
+    }
+  }
+}

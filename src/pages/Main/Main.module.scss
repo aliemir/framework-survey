@@ -1,0 +1,13 @@
+@import '../../styles/common.scss';
+
+div.main--container {
+  height: 100%;
+  width: 100%;
+  font-family: $font-family;
+  color: $logo-color;
+  background-color: $background-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

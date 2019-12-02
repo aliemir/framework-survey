@@ -2,99 +2,19 @@ import { useReducer } from "react";
 import states from "./states";
 import * as data from "../data/data.json";
 import actions from "./actions";
-// import { stateChangeCallbacks } from "./callbacks";
-
-// const {
-//   idleCallback,
-//   contextCallback,
-//   endCallback,
-//   questionCallback,
-//   commentCallback,
-//   defaultCallback
-// } = stateChangeCallbacks;
-
-
-const surveyDataFromJSON = data.survey.contexts;
-console.log(surveyDataFromJSON)
-
-const initialState = {
-  state: states.CONTEXT_SELECT,
-  currentQuestion: -1,
-  context: [],
-  contextQuestion: {
-    description: data.survey.contextQuestionText,
-    answers: surveyDataFromJSON.map(c => ({
-      id: c.context,
-      text: c.displayName,
-      context: c.context
-    }))
-  },
-  questions: [
-    {
-      id: -1,
-      text: ""
-    }
-  ],
-  answers: [],
-  comment: ""
-};
+import { setInitialState, setAnswer, populateQuestions } from "./helpers";
 
 const useFormState = () => {
-  // const [formState, setFormState] = useState(states.IDLE);
-  //const [state, setState] = useState({});
-  // useEffect(() => {
-  //   switch (formState) {
-  //     case states.IDLE:
-  //       idleCallback();
-  //       break;
-  //     case states.CONTEXT_SELECT:
-  //       contextCallback();
-  //       break;
-  //     case states.END:
-  //       endCallback();
-  //       break;
-  //     case states.QUESTION:
-  //       questionCallback();
-  //       break;
-  //     case states.COMMENT:
-  //       commentCallback();
-  //       break;
-  //     default:
-  //       defaultCallback();
-  //       break;
-  //   }
-  // }, [formState]);
-
-  const setAnswer = (answerArray, answerIndex, answer) => {
-    const newArr = [...answerArray];
-    newArr[answerIndex] = {aId: answer[0], qId: answerIndex};
-    return newArr;
-  };
-
-  const populateQuestions = (contextArray, surveyData) => {
-    const qArray = [];
-    console.log(surveyData )
-    contextArray.forEach(c => {
-      const selectedContext = surveyData.find(el => el.context === c);
-      if (selectedContext) {
-        qArray.push(...selectedContext.questions);
-      }
-    });
-    return qArray;
-  };
-
   const [survey, dispatch] = useReducer((curr, action) => {
     switch (action.type) {
       default:
         console.log("UNHANDLED_TYPE, ", action.type);
         break;
       case actions.RESET_FORM:
-        //setFormState(states.CONTEXT_SELECT);
         return {
-          ...initialState
+          ...setInitialState(data, states.CONTEXT_SELECT)
         };
       case actions.SET_ANSWER:
-        console.log(action);
         if (curr.state === states.CONTEXT_SELECT) {
           return {
             ...curr,
@@ -121,16 +41,17 @@ const useFormState = () => {
       case actions.NEXT:
         const nextQuestionIndex = curr.currentQuestion + 1;
         if (curr.state === states.CONTEXT_SELECT && curr.context.length > 0) {
-          //setFormState(states.QUESTION);
+          const questions = populateQuestions(curr.context, data);
           return {
             ...curr,
-            state: states.QUESTION,
-            questions: populateQuestions(curr.context, surveyDataFromJSON),
-            currentQuestion: nextQuestionIndex
+            state: questions.length > 0 ? states.QUESTION : states.COMMENT,
+            questions: questions,
+            currentQuestion: 0
           };
         } else if (
           curr.state === states.QUESTION &&
-          curr.answers[curr.currentQuestion] !== undefined
+          curr.answers[curr.currentQuestion] !== undefined &&
+          curr.answers[curr.currentQuestion].aId !== undefined
         ) {
           if (curr.questions[nextQuestionIndex]) {
             return {
@@ -138,14 +59,12 @@ const useFormState = () => {
               currentQuestion: nextQuestionIndex
             };
           } else {
-            //setFormState(states.COMMENT);
             return {
               ...curr,
               state: states.COMMENT
             };
           }
         } else if (curr.state === states.COMMENT) {
-          //setFormState(states.END);
           return {
             ...curr,
             state: states.END
@@ -166,9 +85,10 @@ const useFormState = () => {
               currentQuestion: prevQuestionIndex
             };
           } else {
-            //setFormState(states.CONTEXT_SELECT);
             return {
               ...curr,
+              questions: [],
+              answers: [],
               state: states.CONTEXT_SELECT
             };
           }
@@ -178,7 +98,7 @@ const useFormState = () => {
           };
         }
     }
-  }, initialState);
+  }, setInitialState(data, states.CONTEXT_SELECT));
   return [survey, dispatch];
 };
 

@@ -17,9 +17,9 @@ const Main = props => {
     dispatch({ type: actions.RESET_FORM });
   }, []);
 
-  useEffect(() => {
-    console.log(survey);
-  }, [survey]);
+  // useEffect(() => {
+  //   console.log(survey);
+  // }, [survey]);
 
   const onResetClick = answers => {
     dispatch({ type: actions.RESET_FORM });
@@ -80,16 +80,5 @@ const Main = props => {
     </div>
   );
 };
-
-// gameState: "",
-//   onAnswerClick: () => console.log("answer clicked"),
-//   onNextClick: () => console.log("next-clicked"),
-//   onPrevClick: () => console.log("prev-clicked"),
-//   question: {
-//     id: -1,
-//     description:
-//       "no question text provided, no question text provided,no question text provided",
-//     answers: [{ id: 1, text: "text", selected: true }, { id: 2, text: "text2" }]
-//   }
 
 export default Main;
